@@ -193,7 +193,7 @@ if st.session_state.page == 2:
                     st.write(f"امتیاز انجام ندادن {habit_score_ne[f"{i}"]}")
                     st.write(f"امتیاز انجام دادن {habit_score_pl[f"{i}"]}")
                     st.write(f" در باره عادت : {habit_abu [f"{i}"]}")
-                    if st.button("انجام شد 🫡" , use_container_width=True):
+                    if st.button("انجام شد 🫡" , key = f"{i}",use_container_width=True):
                         with open("data.json", "r", encoding="utf-8") as file:
                             saver = json.load(file) 
                         score_habit = saver ["score_habit"]
