@@ -3,6 +3,7 @@ import streamlit as st
 import json
 import datetime
 import jdatetime
+import matplotlib.pyplot as plt
 
 #var
 now = jdatetime.datetime.now()
@@ -40,7 +41,17 @@ saver = {
     "score_habit" : score_habit
 }
 one_tow = []
-
+en_sleep = {"شنبه":"7", "یک شنبه":"7", "دو شنبه":"7", "سه شنبه":"7", "چهار شنبه":"7", "پنج شنبه":"9", "جمعه":"9",}
+st_sleep = {"شنبه":"00", "یک شنبه":"00:00", "دو شنبه":"00:00", "سه شنبه":"00:00", "چهار شنبه":"00:00", "پنج شنبه":"00:00", "جمعه":"00:00",}
+rerun_colors = rerun_colors = {"1":"#E53935","2":"#8E24AA","3":"#3949AB","4":"#1E88E5","5":"#00897B","6":"#43A047","7":"#7CB342","8":"#F9A825","9":"#FF8F00","10":"#FB8C00","11":"#F4511E","12":"#D81B60","13":"#6D4C41","14":"#5E35B1","15":"#546E7A","16":"#00ACC1","17":"#00838F","18":"#C0CA33","19":"#FDD835","20":"#EF6C00","21":"#AD1457","22":"#4527A0","23":"#283593","24":"#37474F"
+}
+rerun_color = []
+rerun_name = []
+rerun_mi = []
+rerun_st = []
+rerun_en = []
+True_ = True
+hihihi = 0
 #cod
 st.set_page_config(
     page_title="my planer",
@@ -86,6 +97,17 @@ p{
 
 </style>
 """, unsafe_allow_html=True)
+st.markdown("""
+<style>
+.my_text {
+    font-size: 25px;
+    color: #263238 !important;
+    line-height: 120px;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
 
 
 if st.session_state.page == 0:
@@ -156,13 +178,109 @@ if st.session_state.page == 2:
         x = dict(sorted(rerun_st_time.items(),key=lambda x: x[1]))
         one_tow = list(x.keys())
         one_tow = [int(x) for x in one_tow]
+
+
+        for i in one_tow:
+            i = str(i)
+            if True_ is True :
+                pizza = int(en_sleep[to_day]) * 60
+                rerun_name.append("خواب")
+                rerun_color.append("#D3D3D3")
+                rerun_mi.append(pizza)
+                rerun_st.append("00:00")   
+                rerun_en.append(f"{en_sleep[to_day]}:00")
+                True_ = False         
+            if rerun[i] != "" :
+                if to_day in rerun_day[i]: 
+                    x3 = rerun_st_time[i]
+                    x2 = int(x3[:2])*60
+                    x = x2 + int(x3[3:])
+                    y3 = rerun_en_time[i]
+                    y2 = int(y3[:2])*60
+                    y = y2 + int(y3[3:])
+                    if x > int(rerun_en[-1].split(":")[0]) * 60 + int(rerun_en[-1].split(":")[1]):
+                        last = int(rerun_en[-1].split(":")[0]) * 60 + int(rerun_en[-1].split(":")[1])
+                        free_time = x - last
+                        rerun_name.append("وقت خالی")
+                        rerun_color.append("#FFBBBB")
+                        rerun_mi.append(free_time)
+                        rerun_st.append(rerun_en[-1])
+                        rerun_en.append(rerun_st_time[i])
+                    pizza = y-x
+                    rerun_mi.append(pizza)
+                    rerun_name.append(rerun[i])
+                    rerun_color.append(rerun_colors[i])
+                    rerun_st.append(rerun_st_time[i])
+                    rerun_en.append(rerun_en_time[i])
+                    hihihi = i
+        jkjk = 0
+        for hi in rerun_mi:
+            jkjk += hi
+        print(jkjk)
+        if jkjk < 1440 :
+            pizza = 1440-jkjk
+            rerun_name.append("وقت خالی")
+            rerun_color.append("#FFBBBB")
+            rerun_mi.append(pizza)
+            rerun_st.append(rerun_en[-1])
+            rerun_en.append("00:00")
+        time_texts = iter(zip(rerun_st, rerun_en))
+
+        wedges, texts = plt.pie(
+            rerun_mi,
+            colors=rerun_color,
+            startangle=270,
+            counterclock=False
+        )
+
+        for index, wedge in enumerate(wedges):
+            angle = (wedge.theta1 + wedge.theta2) / 2
+            x = 0.6 * np.cos(np.radians(angle))
+            y = 0.6 * np.sin(np.radians(angle))
+            text_angle = angle
+            if text_angle > 90 and text_angle < 270:
+                text_angle += 180
+            plt.text(
+                x,
+                y,
+                f"از {rerun_st[index]} تا {rerun_en[index]}",
+                ha="center",
+                va="center",
+                fontsize=8,
+                rotation=text_angle,
+                rotation_mode="anchor"
+            )
+
+        for index, wedge in enumerate(wedges):
+            angle = (wedge.theta1 + wedge.theta2) / 2
+            x = 1.25 * np.cos(np.radians(angle))
+            y = 1.25 * np.sin(np.radians(angle))
+            text_angle = angle
+
+            if text_angle > 90 and text_angle < 270:
+                text_angle += 180
+            plt.text(
+                x,
+                y,
+                rerun_name[index],
+                ha="center",
+                va="center",
+                fontsize=9,
+                rotation=text_angle,
+                rotation_mode="anchor"
+            )
+
+        plt.gcf().set_facecolor("#B7E4C7")
+        plt.gcf().set_size_inches(5, 5)
+        st.pyplot(plt.gcf(), use_container_width=True)
+        st.markdown("<hr style='border: 2px solid #E89B5F;'>", unsafe_allow_html=True)
         for i in one_tow:
             i = str(i)
             if rerun[i] != "" :
                 x = rerun_st_time[i]
                 x = int(x[:2])
-                if hour+1 <= x :
-                    if to_day in rerun_day[i]:
+                if to_day in rerun_day[i]:   
+                    if hour+1 <= x :
                         st.write(f"***{rerun[i]}***")
                         st.markdown(
                         f"از ساعت <span style='color:#D95D6A'>{rerun_st_time[i]}</span> تا ساعت <span style='color:#D95D6A'>{rerun_en_time[i]}</span>",
@@ -193,7 +311,7 @@ if st.session_state.page == 2:
                     st.write(f"امتیاز انجام ندادن {habit_score_ne[f"{i}"]}")
                     st.write(f"امتیاز انجام دادن {habit_score_pl[f"{i}"]}")
                     st.write(f" در باره عادت : {habit_abu [f"{i}"]}")
-                    if st.button("انجام شد 🫡" , key = f"{i}",use_container_width=True):
+                    if st.button("انجام شد 🫡" , use_container_width=True , key=i):
                         with open("data.json", "r", encoding="utf-8") as file:
                             saver = json.load(file) 
                         score_habit = saver ["score_habit"]
