@@ -4,7 +4,7 @@ import json
 import datetime
 import jdatetime
 import matplotlib.pyplot as plt
-
+import numpy as np
 #var
 now = jdatetime.datetime.now()
 days = ["شنبه", "یک شنبه", "دو شنبه", "سه شنبه", "چهار شنبه", "پنج شنبه", "جمعه"]
